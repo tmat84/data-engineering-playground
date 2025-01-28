@@ -13,4 +13,9 @@ repos:
     rev: v0.21.0
     hooks:
       - id: sqlfmt
-        language_version: python 
+        language_version: python
+    # Linting of Python code
+    - repo: https://github.com/pycqa/flake8
+    rev: 3.9.2
+    hooks:
+      - id: flake8

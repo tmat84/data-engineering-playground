@@ -8,6 +8,7 @@ dbt-athena-community = "==1.8.3"
 dbt-adapters = "*"
 pandas = "*"
 jupyterlab = "*"
+faker = "*"
 
 [dev-packages]
 dbt-common = "*"
