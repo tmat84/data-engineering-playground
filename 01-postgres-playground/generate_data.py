@@ -7,8 +7,9 @@ fake = Faker()
 
 # print(dir(fake))
 
+
 @dataclass
-class Person():
+class Person:
     name: str
     age: int
     email: str
@@ -19,11 +20,14 @@ class Person():
     # adress: str
     # height: float
 
-persons = [Person(name = fake.name(),age=random.randint(1, 100),email = fake.email()) for _ in range(10)]
+
+persons = [
+    Person(name=fake.name(), age=random.randint(1, 100), email=fake.email())
+    for _ in range(10)
+]
 
 print(persons)
 
 df = pd.DataFrame(persons)
 
 print(df)
-
