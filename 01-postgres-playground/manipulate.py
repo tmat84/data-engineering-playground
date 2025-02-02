@@ -1,5 +1,7 @@
 from connect import engine as postgres_engine
-import pandas
+import pandas as pd
+import pyarrow.parquet as pq
+import time
 
 
 def execute_sql(postgres_engine, sql):
