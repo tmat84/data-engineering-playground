@@ -1,0 +1,85 @@
+id: 01_ingest_data
+namespace: personal_bank
+description: |
+  Best to add a label `backfill:true` from the UI to track executions created via a backfill.
+  CSV data used here comes from: https://github.com/DataTalksClub/nyc-tlc-data/releases
+
+concurrency:
+  limit: 1
+
+
+variables:
+  file: "Lista_operacji_{{trigger.date ?? execution.startDate | date('yyyy')}}_{{trigger.date ?? execution.startDate | date('MM')}}.csv"
+  staging_table: "public.posting_staging"
+  table: "raw._posting"
+  data: "{{outputs.extract.outputFiles['Lista_operacji_' ~ (trigger.date ?? execution.startDate | date('yyyy')) ~ '_' ~ (trigger.date ?? execution.startDate | date('MM')) ~ '.csv']}}"
+
+tasks:
+  - id: hello
+    type: io.kestra.plugin.core.log.Log
+    message: "Hello World on {{ trigger.date ?? execution.startDate | date('yyyy') }}! 🚀"
+
+
+  - id: set_label
+    type: io.kestra.plugin.core.execution.Labels
+    labels:
+      file: "{{render(vars.file)}}"
+
+  - id: extract
+    type: io.kestra.plugin.scripts.python.Commands
+    namespaceFiles:
+      enabled: true
+    outputFiles:
+      - "*.csv"
+    taskRunner:
+      type: io.kestra.plugin.core.runner.Process
+    beforeCommands:
+      - python3 -m venv .venv
+      - . .venv/bin/activate
+      - pip install -r ingest_data/requirements.txt
+    commands:
+      - python ingest_data/main.py
+
+  - id: yellow_merge_data
+    type: io.kestra.plugin.jdbc.postgresql.Queries
+    sql: |
+      MERGE INTO {{render(vars.table)}} AS T
+      USING {{render(vars.staging_table)}} AS S
+      ON T.unique_row_id = S.unique_row_id
+      WHEN NOT MATCHED THEN
+        INSERT (
+          unique_row_id, filename, VendorID, tpep_pickup_datetime, tpep_dropoff_datetime,
+          passenger_count, trip_distance, RatecodeID, store_and_fwd_flag, PULocationID,
+          DOLocationID, payment_type, fare_amount, extra, mta_tax, tip_amount, tolls_amount,
+          improvement_surcharge, total_amount, congestion_surcharge
+        )
+        VALUES (
+          S.unique_row_id, S.filename, S.VendorID, S.tpep_pickup_datetime, S.tpep_dropoff_datetime,
+          S.passenger_count, S.trip_distance, S.RatecodeID, S.store_and_fwd_flag, S.PULocationID,
+          S.DOLocationID, S.payment_type, S.fare_amount, S.extra, S.mta_tax, S.tip_amount, S.tolls_amount,
+          S.improvement_surcharge, S.total_amount, S.congestion_surcharge
+        );
+
+  
+  # - id: read_file
+  #   type: io.kestra.plugin.scripts.shell.Commands
+  #   commands:
+  #     - cat {{outputs.extract.outputFiles['test.csv']}}
+
+
+  # - id: logi
+  #   type: io.kestra.plugin.core.log.Log
+  #   message: "{{outputs.extract.vars.Total}}"
+
+
+pluginDefaults:
+  - type: io.kestra.plugin.jdbc.postgresql
+    values:
+      url: jdbc:postgresql://host.docker.internal:5432/dev
+      username: kestra
+      password: k3str4
+
+triggers:
+  - id: bank_schedule
+    type: io.kestra.plugin.core.trigger.Schedule
+    cron: "@monthly"

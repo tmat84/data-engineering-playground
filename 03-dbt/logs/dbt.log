@@ -1,0 +1,30 @@
+[0m18:02:08.757612 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fe98901fcd0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fe98901f910>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fe98901e810>]}
+
+
+============================== 18:02:08.762850 | 61138a1e-3df9-44f5-a0c8-6a978b2f95f4 ==============================
+[0m18:02:08.762850 [info ] [MainThread]: Running with dbt=1.9.2
+[0m18:02:08.763398 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'write_json': 'True', 'log_cache_events': 'False', 'partial_parse': 'True', 'cache_selected_only': 'False', 'warn_error': 'None', 'debug': 'False', 'fail_fast': 'False', 'log_path': 'logs', 'profiles_dir': '/home/tmatczak/.dbt', 'version_check': 'True', 'use_colors': 'True', 'use_experimental_parser': 'False', 'empty': 'None', 'quiet': 'False', 'no_print': 'None', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'static_parser': 'True', 'introspect': 'True', 'invocation_command': 'dbt init', 'target_path': 'None', 'log_format': 'default', 'send_anonymous_usage_stats': 'True'}
+[0m18:02:17.416112 [debug] [MainThread]: Starter project path: /home/tmatczak/.local/share/virtualenvs/data-engineering-playground-aOD_4eOI/lib/python3.11/site-packages/dbt/include/starter_project
+[0m18:02:17.418752 [info ] [MainThread]: 
+Your new dbt project "bank_project" was created!
+
+For more information on how to configure the profiles.yml file,
+please consult the dbt documentation here:
+
+  https://docs.getdbt.com/docs/configure-your-profile
+
+One more thing:
+
+Need help? Don't hesitate to reach out to us via GitHub issues or on Slack:
+
+  https://community.getdbt.com/
+
+Happy modeling!
+
+[0m18:02:17.419248 [info ] [MainThread]: Setting up your profile.
+[0m18:03:27.914136 [info ] [MainThread]: Profile bank_project written to /home/tmatczak/.dbt/profiles.yml using target's profile_template.yml and your supplied values. Run 'dbt debug' to validate the connection.
+[0m18:03:27.915349 [debug] [MainThread]: Resource report: {"command_name": "init", "command_success": true, "command_wall_clock_time": 79.20322, "process_in_blocks": "45792", "process_kernel_time": 0.139931, "process_mem_max_rss": "97408", "process_out_blocks": "88", "process_user_time": 1.138122}
+[0m18:03:27.916055 [debug] [MainThread]: Command `dbt init` succeeded at 18:03:27.915861 after 79.20 seconds
+[0m18:03:27.916495 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fe98901d1d0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fe98cd610d0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x7fe989073fd0>]}
+[0m18:03:27.916907 [debug] [MainThread]: Flushing usage events
+[0m18:03:28.459111 [debug] [MainThread]: An error was encountered while trying to flush usage events

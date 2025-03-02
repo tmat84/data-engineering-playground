@@ -1,0 +1,121 @@
+services:
+  metabase:
+    image: metabase/metabase:latest
+    container_name: metabase
+    hostname: metabase
+    volumes:
+      - metabase-data:/dev/random:ro
+    ports:
+      - 3000:3000
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: metabaseappdb
+      MB_DB_PORT: 5432
+      MB_DB_USER: metabase
+      MB_DB_PASS: mysecretpassword
+      MB_DB_HOST: postgres
+    networks:
+      - metanet1
+    healthcheck:
+      test: curl --fail -I http://localhost:3000/api/health || exit 1
+      interval: 15s
+      timeout: 5s
+      retries: 5
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    hostname: postgres
+    environment:
+      POSTGRES_USER: metabase
+      POSTGRES_DB: metabaseappdb
+      POSTGRES_PASSWORD: mysecretpassword
+    volumes:
+      - postgres-data-bank:/var/lib/postgresql/data
+    networks:
+      - metanet1
+  postgres_bank_data:
+    image: postgres
+    container_name: postgres-db-bank
+    environment:
+      POSTGRES_USER: kestra
+      POSTGRES_PASSWORD: k3str4
+      POSTGRES_DB: dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - metanet1
+  postgres_kestra:
+    image: postgres
+    volumes:
+      - postgres-data-kestra:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: kestra
+      POSTGRES_USER: kestra
+      POSTGRES_PASSWORD: k3str4
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+    networks:
+      - metanet1
+  kestra:
+    image: kestra/kestra:latest
+    pull_policy: always
+    user: "root"
+    command: server standalone
+    volumes:
+      - kestra-data:/app/storage
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/kestra-wd:/tmp/kestra-wd
+    environment:
+      KESTRA_CONFIGURATION: |
+        datasources:
+          postgres:
+            url: jdbc:postgresql://postgres_kestra:5432/kestra
+            driverClassName: org.postgresql.Driver
+            username: kestra
+            password: k3str4
+        kestra:
+          server:
+            basicAuth:
+              enabled: false
+              username: "admin@kestra.io" # it must be a valid email address
+              password: kestra
+          repository:
+            type: postgres
+          storage:
+            type: local
+            local:
+              basePath: "/app/storage"
+          queue:
+            type: postgres
+          tasks:
+            tmpDir:
+              path: /tmp/kestra-wd/tmp
+          url: http://localhost:8080/
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    depends_on:
+      postgres_kestra:
+        condition: service_started
+    networks:
+      - metanet1
+networks:
+  metanet1:
+    driver: bridge
+volumes:
+  postgres-data-bank:
+    driver: local
+  metabase-data:
+    driver: local
+  postgres-data:
+    driver: local
+  kestra-data:
+    driver: local
+  postgres-data-kestra:
+    driver: local
+  

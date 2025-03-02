@@ -9,6 +9,9 @@ dbt-adapters = "*"
 pandas = "*"
 jupyterlab = "*"
 faker = "*"
+sqlalchemy = "*"
+psycopg2-binary = "*"
+dbt-postgres = "*"
 
 [dev-packages]
 dbt-common = "*"
