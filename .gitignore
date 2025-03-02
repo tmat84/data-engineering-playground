@@ -1,3 +1,4 @@
 .ipynb_checkpoints
+02-workflow-orchiestration/kestra/data/
 02-workflow-orchiestration/kestra/data/*.csv
 03-dbt/*.csv
